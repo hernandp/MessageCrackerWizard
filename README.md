@@ -1,7 +1,7 @@
-# MessageCrackerWizard
+# Message Cracker Wizard
 A tool for aiding Win32 C development using WINDOWSX.H message crackers.
 
-# Introduction
+## Introduction
 
 This is the source code, MIT licensed now, of my old ClassWizard-like tool to working with WINDOWSX.H message cracker macros. It's intended as you imagine, for raw-C and C++ programmers developing Win32 native applications.
 
@@ -11,7 +11,7 @@ https://www.codeproject.com/Articles/4948/Message-Cracker-Wizard-for-Win-SDK-Dev
 
 Suggestions are welcome.
 
-# Version History
+## Version History
 
 * 1.0
   * First release, Sep, 2003.
