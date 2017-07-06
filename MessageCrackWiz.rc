@@ -1,0 +1,333 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Español resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESN)
+#ifdef _WIN32
+LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_MODERN
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Español resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Español (Argentina) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESS)
+#ifdef _WIN32
+LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_ARGENTINA
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RT_MANIFEST
+//
+
+1                       RT_MANIFEST             "mcwizard.exe.manifest"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_WIZARD DIALOGEX 0, 0, 327, 242
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | 
+    WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOPMOST | WS_EX_WINDOWEDGE | WS_EX_APPWINDOW
+CAPTION "Message Cracker Wizard 2.2"
+MENU IDR_MENU1
+CLASS "MessageCrackerWizard"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LISTBOX         IDC_MESSAGES,7,18,135,82,LBS_SORT | LBS_MULTIPLESEL | 
+                    LBS_OWNERDRAWFIXED | LBS_HASSTRINGS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Fil&ter...",IDC_FILTERBTN,85,103,57,15
+    COMBOBOX        IDC_WINDOWID,149,18,110,44,CBS_DROPDOWN | 
+                    CBS_OWNERDRAWFIXED | CBS_SORT | CBS_HASSTRINGS | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Ma&ke Window Procedure",IDC_MAKEWNDPROC,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,149,34,95,10
+    CONTROL         "Wind&ow",IDC_RADWINDOW,"Button",BS_AUTORADIOBUTTON,155,
+                    58,41,10
+    CONTROL         "&Dialog",IDC_DIALOG,"Button",BS_AUTORADIOBUTTON,155,68,
+                    35,10
+    CONTROL         "No heading comments",IDC_NOHEADINGCOMMENTS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,155,94,86,10
+    CONTROL         "No ""TODO"" comments",IDC_NOTODOCOMMENTS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,155,105,87,10
+    PUSHBUTTON      "Copy &Macro",IDC_COPYMACRO,263,50,57,15
+    PUSHBUTTON      "Copy &Function",IDC_COPYFUNC,263,69,57,15
+    PUSHBUTTON      "C&lose",IDC_CLOSE,263,103,57,15
+    EDITTEXT        IDC_HANDLEMSG,14,145,299,31,ES_MULTILINE | 
+                    ES_AUTOHSCROLL | WS_VSCROLL
+    EDITTEXT        IDC_MSGFUNCTION,14,191,299,31,ES_MULTILINE | 
+                    ES_AUTOHSCROLL | WS_VSCROLL
+    LTEXT           "&Window Messages:",IDC_STATIC,7,7,62,8
+    LTEXT           "Window &ID",IDC_STATIC,147,7,37,8
+    GROUPBOX        "Target Code",IDC_STATIC,7,125,313,106
+    LTEXT           "Message Cracking Macros",IDC_STATIC,14,135,83,8
+    LTEXT           "Message Processing Functions",IDC_STATIC,14,180,162,8
+    GROUPBOX        "Type",IDC_STATIC,149,47,109,37
+    GROUPBOX        "Options",IDC_STATIC,149,85,109,33
+    LTEXT           "0 message(s) selected.",IDC_NUMSELECT,7,105,75,8
+END
+
+IDD_ABOUT DIALOGEX 0, 0, 253, 92
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "About"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Ok",IDOK,101,71,50,14
+    ICON            IDI_MCWICON,IDC_STATIC,7,7,20,20
+    LTEXT           "Message Cracker Wizard Utility for Windows API Development",
+                    IDC_STATIC,37,7,209,10
+    LTEXT           "(c) 2003-2017, Hernán Di Pietro.",IDC_STATIC,36,28,130,
+                    8
+    LTEXT           "Version 2.2",IDC_STATIC,37,15,137,10
+    LTEXT           "https://github.com/hernandp",IDC_STATIC,37,47,
+                    119,8
+END
+
+IDD_FILTER DIALOGEX 0, 0, 193, 156
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | 
+    WS_CAPTION | WS_SYSMENU
+CAPTION "Message Filter"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "&Ok",IDOK,41,135,50,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,103,135,50,14
+    LTEXT           "Check the  messages you want to include depending on the following types:",
+                    IDC_STATIC,7,7,171,17
+    GROUPBOX        "",IDC_STATIC,7,22,179,110
+    CONTROL         "&General",IDC_FGENERAL,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,41,31,41,10
+    CONTROL         "&Keyboard",IDC_FKEYBOARD,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,41,47,47,10
+    CONTROL         "&Mouse",IDC_FMOUSE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,41,63,37,10
+    CONTROL         "Clip&board",IDC_FCLIPBRD,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,41,79,46,10
+    CONTROL         "M&DI",IDC_FMDI,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,41,
+                    95,29,10
+    CONTROL         "&Non-Client",IDC_FNCLIENT,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,41,110,49,10
+    CONTROL         114,IDC_STATIC,"Static",SS_BITMAP,28,31,11,10,
+                    WS_EX_TRANSPARENT
+    CONTROL         110,IDC_STATIC,"Static",SS_BITMAP,28,47,11,10
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,28,79,11,10
+    CONTROL         115,IDC_STATIC,"Static",SS_BITMAP,28,94,11,10
+    CONTROL         111,IDC_STATIC,"Static",SS_BITMAP,28,62,11,10
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,28,110,11,10
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_WIZARD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 320
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 231
+        HORZGUIDE, 17
+    END
+
+    IDD_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 246
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 85
+    END
+
+    IDD_FILTER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 186
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 149
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Copy &Macro\tCtrl+M",         ID_EDIT_COPYMACRO
+        MENUITEM "Copy &Function\tCtrl+F",      ID_EDIT_COPYFUNCTION
+        MENUITEM SEPARATOR
+        MENUITEM "Message Fi&lters...\tCtrl+L", ID_EDIT_MESSAGEFILTERS
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "Stay on &Top",                ID_VIEW_STAYONTOP, CHECKED
+        POPUP "Window Tr&ansparency"
+        BEGIN
+            MENUITEM "Solid",                       ID_WINDOWTRANSPARENCY_SOLID
+
+            MENUITEM "10%",                         ID_WINDOWTRANSPARENCY_10
+            MENUITEM "25%",                         ID_WINDOWTRANSPARENCY_25
+            MENUITEM "50%",                         ID_WINDOWTRANSPARENCY_50
+            MENUITEM "75%",                         ID_WINDOWTRANSPARENCY_75
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "&Show Target Code\tCtrl+F11", ID_VIEW_SHOWTARGETCODE
+        , CHECKED
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About...",                   ID_HELP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_MCWICON             ICON                    "ico\msgcrk.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCEL ACCELERATORS 
+BEGIN
+    "^L",           ID_EDIT_MESSAGEFILTERS, ASCII,  NOINVERT
+    "^F",           IDC_COPYFUNC,           ASCII,  NOINVERT
+    "^M",           IDC_COPYMACRO,          ASCII,  NOINVERT
+    VK_F11,         ID_VIEW_SHOWTARGETCODE, VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,2,0,0
+ PRODUCTVERSION 2,2,0,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "2c0a04b0"
+        BEGIN
+            VALUE "CompanyName", "Hernan Di Pietro"
+            VALUE "FileDescription", "Message Cracker Wizard Application"
+            VALUE "FileVersion", "2.2"
+            VALUE "InternalName", "MCWIZARD"
+            VALUE "LegalCopyright", "(C) 2003,2004,2005, 2017 Hernan Di Pietro"
+            VALUE "LegalTrademarks", "Licensed under MIT"
+            VALUE "OriginalFilename", "mcwizard.exe"
+            VALUE "ProductName", "Message Cracker Wizard Application"
+            VALUE "ProductVersion", "2.2.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x2c0a, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_KEYBOARD            BITMAP                  ".\\bmp\\keybrd.bmp"
+IDB_MOUSE               BITMAP                  ".\\bmp\\mouse.bmp"
+IDB_CLIPBOARD           BITMAP                  ".\\bmp\\clpbrd.bmp"
+IDB_NONCLIENT           BITMAP                  ".\\bmp\\nclient.bmp"
+IDB_GENERAL             BITMAP                  ".\\bmp\\general.bmp"
+IDB_MDI                 BITMAP                  ".\\bmp\\mdi.bmp"
+IDB_WINDOW              BITMAP                  ".\\bmp\\window.bmp"
+#endif    // Español (Argentina) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
