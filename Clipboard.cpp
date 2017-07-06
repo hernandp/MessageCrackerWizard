@@ -30,16 +30,16 @@ SOFTWARE.
 #include "msgcrackwizard.h"
 #include "resource.h"
 
-  //
-  // Copia la macro al clipboard
-  //
+//
+// Copia la macro al clipboard
+//
 void CopyMacroToCB(HWND hwnd)
 {
 	const std::wstring	windowProcHeader = L"_WndProc (HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)\r\n";
 	const std::wstring	dialogProcHeader = L"_DlgProc (HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lParam)\r\n";
 
 	auto windowIdTextLen = GetWindowTextLength(GetDlgItem(hwnd, IDC_WINDOWID));
-	auto handleMsgTextLen= GetWindowTextLength(GetDlgItem(hwnd, IDC_HANDLEMSG));
+	auto handleMsgTextLen = GetWindowTextLength(GetDlgItem(hwnd, IDC_HANDLEMSG));
 	auto WindowID = std::make_unique<wchar_t[]>(windowIdTextLen + 1);
 	auto macroText = std::make_unique<wchar_t[]>(handleMsgTextLen + 1);
 
@@ -67,14 +67,14 @@ void CopyMacroToCB(HWND hwnd)
 			for (int i = 0; i < nItems; i++)
 			{
 				// now send the message to get the line text
-				
+
 				int lineLength = SendDlgItemMessage(hwnd, IDC_MSGFUNCTION, EM_LINELENGTH, Edit_LineIndex(hwnd, i), 0);
 				auto lineBuf = std::make_unique<wchar_t[]>(lineLength + 1);
-			
-				memset(lineBuf.get(), 0, (lineLength+1) * sizeof(WCHAR));
-				*((WORD*) lineBuf.get()) = (lineLength+1) * sizeof(WCHAR);
 
-				SendDlgItemMessage(hwnd, IDC_HANDLEMSG, EM_GETLINE, i, (LPARAM) lineBuf.get());					
+				memset(lineBuf.get(), 0, (lineLength + 1) * sizeof(WCHAR));
+				*((WORD*) lineBuf.get()) = (lineLength + 1) * sizeof(WCHAR);
+
+				SendDlgItemMessage(hwnd, IDC_HANDLEMSG, EM_GETLINE, i, (LPARAM) lineBuf.get());
 
 				clipText += L"\t" + std::wstring(lineBuf.get()) + L"\r\n";
 			}
@@ -152,7 +152,7 @@ void CopyFuncToCB(HWND hwnd)
 	wchar_t		WindowID[MAX_WINDOWID_STR_LEN];
 
 	// store Window ID, function header and message name
-	
+
 	GetDlgItemText(hwnd, IDC_WINDOWID, WindowID, _countof(WindowID));
 
 	std::wstring clipText;
@@ -167,7 +167,7 @@ void CopyFuncToCB(HWND hwnd)
 		SendDlgItemMessage(hwnd, IDC_MESSAGES, LB_GETTEXT, selItems[i], (LPARAM) szMessage.get());
 
 		// now send the message to get the line text
-		auto lineIndex = Edit_LineIndex(GetDlgItem(hwnd,IDC_MSGFUNCTION), i);
+		auto lineIndex = Edit_LineIndex(GetDlgItem(hwnd, IDC_MSGFUNCTION), i);
 		int lineLength = SendDlgItemMessage(hwnd, IDC_MSGFUNCTION, EM_LINELENGTH, lineIndex, 0);
 		auto lineBuf = std::make_unique<wchar_t[]>(lineLength + 1);
 
@@ -175,13 +175,13 @@ void CopyFuncToCB(HWND hwnd)
 		*((WORD*) lineBuf.get()) = lineLength;
 
 		SendDlgItemMessage(hwnd, IDC_MSGFUNCTION, EM_GETLINE, (WPARAM) i, (LPARAM) lineBuf.get());
-		
+
 		// skip comments?
 		if (IsDlgButtonChecked(hwnd, IDC_NOHEADINGCOMMENTS) == BST_UNCHECKED)
 		{
 			clipText += L"//\r\n//  Process " + std::wstring(szMessage.get()) + L" message for window/dialog: " + WindowID + L"\r\n//\r\n";
 		}
-		clipText += std::wstring(lineBuf.get()) +  L"\r\n{\r\n";
+		clipText += std::wstring(lineBuf.get()) + L"\r\n{\r\n";
 
 		if (IsDlgButtonChecked(hwnd, IDC_NOTODOCOMMENTS) == BST_UNCHECKED)
 		{
@@ -210,8 +210,8 @@ void CopyFuncToCB(HWND hwnd)
 			else
 			{
 				MessageBox(NULL, L"Cannot open clipboard", L"Error", MB_ICONERROR);
-			}		
-		}	
+			}
+		}
 	}
 	else
 	{
