@@ -4,7 +4,7 @@ MIT License
 
 This file is part of Message Cracker Wizard
 
-Copyright (c) 2003-2017 Hernán Di Pietro
+Copyright (c) 2003-2017 Hern? Di Pietro
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -68,7 +68,8 @@ void CopyMacroToCB(HWND hwnd)
 			{
 				// now send the message to get the line text
 
-				int lineLength = SendDlgItemMessage(hwnd, IDC_MSGFUNCTION, EM_LINELENGTH, Edit_LineIndex(hwnd, i), 0);
+				auto lineIndex = Edit_LineIndex(GetDlgItem(hwnd, IDC_HANDLEMSG), i);
+				int lineLength = SendDlgItemMessage(hwnd, IDC_HANDLEMSG, EM_LINELENGTH, lineIndex, 0);
 				auto lineBuf = std::make_unique<wchar_t[]>(lineLength + 1);
 
 				memset(lineBuf.get(), 0, (lineLength + 1) * sizeof(WCHAR));
@@ -101,8 +102,8 @@ void CopyMacroToCB(HWND hwnd)
 
 			for (int i = 0; i < nItems; i++)
 			{
-				auto lineIndex = Edit_LineIndex(GetDlgItem(hwnd, IDC_MSGFUNCTION), i);
-				int lineLength = SendDlgItemMessage(hwnd, IDC_MSGFUNCTION, EM_LINELENGTH, lineIndex, 0);
+				auto lineIndex = Edit_LineIndex(GetDlgItem(hwnd, IDC_HANDLEMSG), i);
+				int lineLength = SendDlgItemMessage(hwnd, IDC_HANDLEMSG, EM_LINELENGTH, lineIndex, 0);
 				auto lineBuf = std::make_unique<wchar_t[]>(lineLength + 1);
 
 				memset(lineBuf.get(), 0, (lineLength + 1) * sizeof(WCHAR));
