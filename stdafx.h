@@ -4,7 +4,7 @@ MIT License
 
 This file is part of Message Cracker Wizard
 
-Copyright (c) 2003-2017 Hernán Di Pietro
+Copyright (c) 2003, 2017, 2018 Hernán Di Pietro
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,4 +36,5 @@ SOFTWARE.
 #include <strsafe.h>
 #include <string>
 #include <memory>
+#include <cassert>
 #endif

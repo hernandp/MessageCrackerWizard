@@ -1,9 +1,10 @@
 /******************************************************************************
+
 MIT License
 
 This file is part of Message Cracker Wizard
 
-Copyright (c) 2003-2017 Hernán Di Pietro
+Copyright (c) 2003, 2017, 2018 Hernán Di Pietro
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +29,9 @@ SOFTWARE.
 	Windows API Message Cracker Wizard Tool
 	for easier use of WINDOWSX.H message cracking macros
 
-	(c) 2003-2017 Hernan Di Pietro
+	(c) 2003, 2017, 2018 Hernan Di Pietro
 
-	Release 2.2
+	Release 2.5
 
 	version history
 	1.0 - first release
@@ -52,6 +53,12 @@ SOFTWARE.
 		  - changed to Unicode for all strings
 		  - fixed analysis, warnings, and related issues
 		  - changed to MIT license
+    2.5   - fix memory corruption error 
+          - fix non-dialog procedure generating 'hwndDlg' instead of 'hwnd' 
+          + added re-sizable window feature.
+          + added 'Dark Mode' color scheme
+          + settings are saved/retrieved  to/from Registry
+          * removed 'Hide Target Code' option
 
 *******************************************************************************/
 
@@ -62,6 +69,21 @@ SOFTWARE.
 
 // globals
 UINT                g_fFilter;
+MCWCONFIG           g_mcwConfig;
+DARKMODERESOURCES   g_darkModeRes;
+
+//
+// Returns a child window RECT in parent-window  coordinate space
+//
+static RECT GetChildWindowRect(HWND hwndParent, UINT childId)
+{
+    assert(GetDlgItem(hwndParent, childId));
+
+    RECT rc;
+    GetClientRect(GetDlgItem(hwndParent, childId), &rc);
+    MapWindowPoints(GetDlgItem(hwndParent, childId), hwndParent, (LPPOINT)&rc, 2);
+    return rc;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Process WM_CREATE message for window/dialog: Cls
@@ -126,6 +148,155 @@ BOOL Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 }
 
 //
+//  Process WM_SIZE message for window/dialog: Cls
+//
+void Cls_OnSize(HWND hwnd, UINT state, int dialogWidth, int dialogHeight)
+{
+    // This resizes and/or positions controls to accommodate new 
+    // window size.
+    //
+    // All units are based on pixels. DO NOT refer to editor or .RC file units,
+    // as they are specified in DLUs (Dialog-Units). 
+    //
+    // In any case, use MapDialogRect API to do necessary conversion.
+    //
+           
+    const int DIALOG_OUTER_SPACING = 10;
+    const int GROUPBOX_INTERIOR_SPACING = 10;
+    const int CONTROL_SPACING = 8;
+    const int DEFAULT_BUTTON_WIDTH = 86;
+    const int DEFAULT_BUTTON_HEIGHT = 24;
+
+    RECT rr;
+    GetClientRect(GetDlgItem(hwnd, IDC_MESSAGES), &rr);
+
+    // Setup layout    
+    UINT layoutColWidth[3] = { 0, 165, 86 };
+    layoutColWidth[0] = dialogWidth - ( GetSystemMetrics(SM_CXHSCROLL) + layoutColWidth[1] + layoutColWidth[2] + (CONTROL_SPACING * 2));
+    
+    UINT messageListHeight = 132;
+
+    RECT rcLabel;
+    GetWindowRect(GetDlgItem(hwnd, IDC_MESSAGES_LABEL), &rcLabel);
+    const UINT labelCtlHeight = rcLabel.bottom - rcLabel.top;
+
+    // 
+    // Second column controls
+    //
+    RECT rcCombo;
+    GetWindowRect(GetDlgItem(hwnd, IDC_WINDOWID), &rcCombo);
+    UINT comboHeight = rcCombo.bottom - rcCombo.top;
+
+    RECT rcCheck;
+    GetWindowRect(GetDlgItem(hwnd, IDC_MAKEWNDPROC), &rcCheck);
+    UINT checkHeight = rcCheck.bottom - rcCheck.top;
+
+    RECT rcRadio;
+    GetWindowRect(GetDlgItem(hwnd, IDC_RADWINDOW), &rcRadio);
+    UINT radioHeight = rcRadio.bottom - rcRadio.top;
+
+    UINT vPos = DIALOG_OUTER_SPACING;
+
+    UINT colLeft = layoutColWidth[0] + DIALOG_OUTER_SPACING + CONTROL_SPACING;
+    MoveWindow(GetDlgItem(hwnd, IDC_WINDOWID_LABEL), colLeft,  vPos, layoutColWidth[1], labelCtlHeight, TRUE);
+    vPos += labelCtlHeight;
+
+    MoveWindow(GetDlgItem(hwnd, IDC_WINDOWID), colLeft, vPos, layoutColWidth[1], comboHeight, TRUE);
+    vPos += comboHeight + 1;
+
+    MoveWindow(GetDlgItem(hwnd, IDC_MAKEWNDPROC), colLeft, vPos, layoutColWidth[1], checkHeight, TRUE);
+    vPos += checkHeight + 1;
+
+    UINT typeGroupBoxTop = vPos;
+    MoveWindow(GetDlgItem(hwnd, IDC_TYPEGROUPBOX), colLeft, vPos, layoutColWidth[1], 58, TRUE);
+    vPos += labelCtlHeight + 2;
+
+    MoveWindow(GetDlgItem(hwnd, IDC_RADWINDOW), colLeft + CONTROL_SPACING, vPos, layoutColWidth[1] - CONTROL_SPACING * 2, radioHeight, TRUE);
+    vPos += radioHeight + 1;
+
+    MoveWindow(GetDlgItem(hwnd, IDC_DIALOG), colLeft + CONTROL_SPACING, vPos, layoutColWidth[1] - CONTROL_SPACING * 2, radioHeight, TRUE);
+    vPos += radioHeight + 1;
+
+    vPos += CONTROL_SPACING * 2;
+    MoveWindow(GetDlgItem(hwnd, IDC_OPTIONSGROUPBOX), colLeft, vPos, layoutColWidth[1], 59, TRUE);
+    vPos += labelCtlHeight + 2;
+
+    MoveWindow(GetDlgItem(hwnd, IDC_NOHEADINGCOMMENTS), colLeft + CONTROL_SPACING, vPos, layoutColWidth[1] - CONTROL_SPACING * 2, checkHeight, TRUE);
+    vPos += checkHeight + 2;
+
+    MoveWindow(GetDlgItem(hwnd, IDC_NOTODOCOMMENTS), colLeft + CONTROL_SPACING, vPos, layoutColWidth[1] - CONTROL_SPACING * 2, checkHeight, TRUE);
+
+    InvalidateRect(GetDlgItem(hwnd, IDC_RADWINDOW), NULL, TRUE);
+    InvalidateRect(GetDlgItem(hwnd, IDC_DIALOG), NULL, TRUE);
+  
+    InvalidateRect(GetDlgItem(hwnd, IDC_NOTODOCOMMENTS), NULL, TRUE);
+    InvalidateRect(GetDlgItem(hwnd, IDC_NOHEADINGCOMMENTS), NULL, TRUE);
+
+    //
+    // Third column controls
+    //
+
+    colLeft += layoutColWidth[1] + CONTROL_SPACING;
+    vPos = typeGroupBoxTop + 5;
+
+    MoveWindow(GetDlgItem(hwnd, IDC_COPYMACRO), colLeft, vPos, layoutColWidth[2], DEFAULT_BUTTON_HEIGHT, TRUE);
+    vPos += DEFAULT_BUTTON_HEIGHT + 4;
+
+    MoveWindow(GetDlgItem(hwnd, IDC_COPYFUNC),  colLeft, vPos, layoutColWidth[2], DEFAULT_BUTTON_HEIGHT, TRUE);
+    vPos += DEFAULT_BUTTON_HEIGHT + 13;
+
+    MoveWindow(GetDlgItem(hwnd, IDC_CLOSE), colLeft, vPos, layoutColWidth[2], DEFAULT_BUTTON_HEIGHT, TRUE);
+
+    InvalidateRect(GetDlgItem(hwnd, IDC_COPYMACRO), NULL, TRUE);
+    InvalidateRect(GetDlgItem(hwnd, IDC_COPYFUNC), NULL, TRUE);
+    InvalidateRect(GetDlgItem(hwnd, IDC_CLOSE), NULL, TRUE);
+
+    // First column controls
+
+    MoveWindow(GetDlgItem(hwnd, IDC_MESSAGES_LABEL), DIALOG_OUTER_SPACING, DIALOG_OUTER_SPACING, layoutColWidth[0], labelCtlHeight, TRUE);
+    MoveWindow(GetDlgItem(hwnd, IDC_MESSAGES), DIALOG_OUTER_SPACING, DIALOG_OUTER_SPACING + labelCtlHeight, layoutColWidth[0], messageListHeight, TRUE);
+
+    MoveWindow(GetDlgItem(hwnd, IDC_FILTERBTN), DIALOG_OUTER_SPACING + layoutColWidth[0] - DEFAULT_BUTTON_WIDTH,
+        DIALOG_OUTER_SPACING + labelCtlHeight + messageListHeight + CONTROL_SPACING,
+        DEFAULT_BUTTON_WIDTH, DEFAULT_BUTTON_HEIGHT, TRUE);
+
+    InvalidateRect(GetDlgItem(hwnd, IDC_FILTERBTN), NULL, TRUE);
+
+    //
+    // Target Code group-box and controls
+    //
+
+    RECT rcFilterBtn = GetChildWindowRect(hwnd, IDC_FILTERBTN);
+    vPos = rcFilterBtn.bottom + 2;
+    const UINT groupHeight = dialogHeight - (rcFilterBtn.bottom + 2) - DIALOG_OUTER_SPACING;
+
+    MoveWindow(GetDlgItem(hwnd, IDC_TARGETCODEGROUP), DIALOG_OUTER_SPACING, vPos, dialogWidth - DIALOG_OUTER_SPACING * 2, groupHeight, TRUE);
+        
+    vPos += labelCtlHeight + CONTROL_SPACING;
+
+    const UINT groupElemLeft = DIALOG_OUTER_SPACING + GROUPBOX_INTERIOR_SPACING;
+    const UINT groupElemWidth = dialogWidth - GROUPBOX_INTERIOR_SPACING * 2 - DIALOG_OUTER_SPACING * 2;
+
+    MoveWindow(GetDlgItem(hwnd, IDC_HANDLEMSG_LABEL), groupElemLeft, vPos, groupElemWidth, labelCtlHeight, TRUE);
+    vPos += labelCtlHeight;
+
+    const UINT msgTextHeight = (groupHeight / 2) - (DIALOG_OUTER_SPACING) - CONTROL_SPACING * 2;
+    MoveWindow(GetDlgItem(hwnd, IDC_HANDLEMSG), groupElemLeft, vPos, groupElemWidth, msgTextHeight, TRUE);
+    vPos += msgTextHeight;
+
+    MoveWindow(GetDlgItem(hwnd, IDC_MSGFUNCTION_LABEL), groupElemLeft, vPos, groupElemWidth, labelCtlHeight, TRUE);
+    vPos += labelCtlHeight;
+
+    MoveWindow(GetDlgItem(hwnd, IDC_MSGFUNCTION), groupElemLeft, vPos, groupElemWidth, msgTextHeight, TRUE);
+
+    // Update configuration data
+
+    RECT wndRect;
+    GetWindowRect(hwnd, &wndRect);
+    g_mcwConfig.rcWindow = wndRect;
+}
+
+//
 // process WM_ONCOMMAND
 //
 void Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
@@ -169,34 +340,20 @@ void Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 
 			break;
 
+        case ID_VIEW_DARKCOLORSCHEME:
+            hMenu = GetMenu(hwnd);
 
-		case ID_VIEW_SHOWTARGETCODE:
-			// collapse or expand the target code group
-			RECT  rect;
-			int   cyClient, cxClient;
-			int   cyResize;
+            // invert menu checkmark
+            CheckMenuItem(hMenu, ID_VIEW_DARKCOLORSCHEME, CheckMenuItem(hMenu, ID_VIEW_DARKCOLORSCHEME,
+                MF_CHECKED) == MF_CHECKED ? MF_UNCHECKED : MF_CHECKED);
 
-			GetWindowRect(hwnd, &rect);
-			cyClient = rect.bottom - rect.top;
-			cxClient = rect.right - rect.left;
+            if (GetMenuState(hMenu, ID_VIEW_DARKCOLORSCHEME, MF_BYCOMMAND) & MF_CHECKED)
+                g_mcwConfig.bDarkMode = true;
+            else
+                g_mcwConfig.bDarkMode = false;
 
-			hMenu = GetMenu(hwnd);
-
-			// invert menu checkmark
-			CheckMenuItem(hMenu, ID_VIEW_SHOWTARGETCODE, CheckMenuItem(hMenu, ID_VIEW_SHOWTARGETCODE,
-				MF_CHECKED) == MF_CHECKED ? MF_UNCHECKED : MF_CHECKED);
-
-			// resize the window
-
-			cyResize = 190;		// resize amount in pixels
-
-			if (GetMenuState(hMenu, ID_VIEW_SHOWTARGETCODE, MF_BYCOMMAND) & MF_CHECKED)
-				cyClient += cyResize;
-			else
-				cyClient -= cyResize;
-
-			SetWindowPos(hwnd, NULL, NULL, NULL, cxClient, cyClient, SWP_NOZORDER | SWP_NOMOVE);
-			break;
+            InvalidateRect(hwnd, NULL, TRUE);
+            break;
 
 		case ID_VIEW_STAYONTOP:
 			// Enable-disable topmost window
@@ -206,17 +363,24 @@ void Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 			CheckMenuItem(hMenu, ID_VIEW_STAYONTOP, CheckMenuItem(hMenu, ID_VIEW_STAYONTOP,
 				MF_CHECKED) == MF_CHECKED ? MF_UNCHECKED : MF_CHECKED);
 
-			if (GetMenuState(hMenu, ID_VIEW_STAYONTOP, MF_BYCOMMAND) & MF_CHECKED)
-				SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-			else
-				SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+            if (GetMenuState(hMenu, ID_VIEW_STAYONTOP, MF_BYCOMMAND) & MF_CHECKED)
+            {
+                SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+                g_mcwConfig.bStayOnTop = true;
+            }
+            else
+            {
+                SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+                g_mcwConfig.bStayOnTop = false;
+            }				
 			break;
 
 			// Make Window Transparent (2000/XP Only)
 
 		case ID_WINDOWTRANSPARENCY_SOLID:
 			SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) & ~WS_EX_LAYERED);
-			UpdateWindow(hwnd);
+            UpdateWindow(hwnd);
+            g_mcwConfig.windowAlpha = ALPHA_SOLID;
 			break;
 
 		case ID_WINDOWTRANSPARENCY_10:
@@ -224,11 +388,11 @@ void Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 		case ID_WINDOWTRANSPARENCY_50:
 		case ID_WINDOWTRANSPARENCY_75:
 
-			if (id == ID_WINDOWTRANSPARENCY_SOLID) bAlpha = 255;
-			if (id == ID_WINDOWTRANSPARENCY_10)    bAlpha = 192;
-			if (id == ID_WINDOWTRANSPARENCY_25)    bAlpha = 128;
-			if (id == ID_WINDOWTRANSPARENCY_50)    bAlpha = 64;
-			if (id == ID_WINDOWTRANSPARENCY_75)    bAlpha = 25;
+			if (id == ID_WINDOWTRANSPARENCY_10)    bAlpha = ALPHA_TRANS_10;
+			if (id == ID_WINDOWTRANSPARENCY_25)    bAlpha = ALPHA_TRANS_25;
+			if (id == ID_WINDOWTRANSPARENCY_50)    bAlpha = ALPHA_TRANS_50;
+			if (id == ID_WINDOWTRANSPARENCY_75)    bAlpha = ALPHA_TRANS_75;
+
 
 			// modify window style        
 			SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
@@ -242,6 +406,7 @@ void Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 				FreeLibrary(hUser32);
 			}
 
+            g_mcwConfig.windowAlpha = bAlpha;
 			break;
 
 			//
@@ -369,6 +534,88 @@ void Cls_OnDestroy(HWND hwnd)
 	PostQuitMessage(0);
 }
 
+void Cls_OnPaint(HWND hwnd)
+{
+    PAINTSTRUCT ps;
+    HDC hdc = BeginPaint(hwnd, &ps);
+
+    RECT rcGrp = GetChildWindowRect(hwnd, IDC_TYPEGROUPBOX);
+    FillRect(hdc, &rcGrp, g_mcwConfig.bDarkMode ? g_darkModeRes.hbrBackground : GetSysColorBrush(COLOR_BTNFACE));
+
+    rcGrp = GetChildWindowRect(hwnd, IDC_OPTIONSGROUPBOX);
+    FillRect(hdc, &rcGrp, g_mcwConfig.bDarkMode ? g_darkModeRes.hbrBackground : GetSysColorBrush(COLOR_BTNFACE));
+
+    EndPaint(hwnd, &ps);
+}
+
+HBRUSH Cls_OnCtlColorStatic(HWND hwnd, HDC hdc, HWND hwndChild, int type)
+{
+    if (g_mcwConfig.bDarkMode)
+    {
+        SetTextColor(hdc, DarkModeColor::StaticText);
+        SetBkColor(hdc, DarkModeColor::Background);
+        return g_darkModeRes.hbrBackground;
+
+    }
+    return (HBRUSH) FALSE;
+}
+
+HBRUSH Cls_OnCtlColorEdit(HWND hwnd, HDC hdc, HWND hwndChild, int type)
+{
+    if (g_mcwConfig.bDarkMode)
+    {
+        SetTextColor(hdc, DarkModeColor::EditText);
+        SetBkColor(hdc, DarkModeColor::EditBackground);
+        return g_darkModeRes.hbrEditBackground;
+    }
+
+    return (HBRUSH)FALSE;
+}
+
+HBRUSH Cls_OnCtlColorBtn(HWND hwnd, HDC hdc, HWND hwndChild, int type)
+{
+    if (g_mcwConfig.bDarkMode)
+    {
+        SetTextColor(hdc, DarkModeColor::EditText);
+        SetBkColor(hdc, DarkModeColor::EditBackground);
+
+        RECT rc;
+        GetClientRect(hwndChild, &rc);
+        DrawText(hdc, L"XXX", _countof(L"XXX") - 1, &rc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        return g_darkModeRes.hbrEditBackground;
+    }
+
+    return (HBRUSH)FALSE;
+}
+
+void Cls_OnGetMinMaxInfo(HWND hwnd, LPMINMAXINFO lpMinMaxInfo)
+{
+    const int MinHeight = 452;
+    const int MinWidth = 507;
+
+    lpMinMaxInfo->ptMinTrackSize.x = MinWidth;
+    lpMinMaxInfo->ptMinTrackSize.y = MinHeight;
+}
+
+void Cls_OnMove(HWND hwnd, int x, int y)
+{
+    RECT wndRect;
+    GetWindowRect(hwnd, &wndRect);
+    g_mcwConfig.rcWindow = wndRect;
+}
+
+BOOL Cls_OnEraseBkgnd(HWND hwnd, HDC hdc)
+{
+    if (g_mcwConfig.bDarkMode)
+    {
+        RECT rc;
+        GetClientRect(hwnd, &rc);
+        FillRect(hdc, &rc, g_darkModeRes.hbrBackground);
+        return TRUE;
+    }
+
+    return FALSE;
+}
 
 //
 //  Process WM_INITDIALOG message for window/dialog: FilterDlg
@@ -453,8 +700,6 @@ void FilterDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 			else
 				g_fFilter &= ~NONCLIENT;
 
-
-
 			EndDialog(hwnd, IDOK);
 			break;
 
@@ -498,10 +743,17 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		HANDLE_MSG(hwnd, WM_INITDIALOG, Cls_OnInitDialog);
 		HANDLE_MSG(hwnd, WM_DRAWITEM, Cls_OnDrawItem);
 		HANDLE_MSG(hwnd, WM_MEASUREITEM, Cls_OnMeasureItem);
+        HANDLE_MSG(hwnd, WM_SIZE, Cls_OnSize);
+        HANDLE_MSG(hwnd, WM_MOVE, Cls_OnMove);
+        HANDLE_MSG(hwnd, WM_PAINT, Cls_OnPaint);
+        HANDLE_MSG(hwnd, WM_GETMINMAXINFO, Cls_OnGetMinMaxInfo);
+        HANDLE_MSG(hwnd, WM_ERASEBKGND, Cls_OnEraseBkgnd);
+        HANDLE_MSG(hwnd, WM_CTLCOLORSTATIC, Cls_OnCtlColorStatic);
+        HANDLE_MSG(hwnd, WM_CTLCOLORBTN, Cls_OnCtlColorBtn);
+        HANDLE_MSG(hwnd, WM_CTLCOLOREDIT, Cls_OnCtlColorEdit);
 
 		default:
 			return FALSE;
-			//return DefDlgProc(hwnd, msg, wParam, lParam);
 	}
 }
 
@@ -523,7 +775,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE prevInstance,
 	// Get the class for the system dialog class
 	wcex.cbSize = sizeof(wcex);
 	GetClassInfoEx(NULL, L"#32770", &wcex);
-	wcex.style &= ~CS_GLOBALCLASS;
+	wcex.style &= ~CS_GLOBALCLASS | CS_HREDRAW | CS_VREDRAW;
 
 	// Register class
 	wcex.lpszClassName = szClassName;
@@ -542,34 +794,54 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE prevInstance,
 		return 0;
 	}
 
-	// initialize common controls, accelerators
+	// initialize common controls, accelerators, dark-mode r and load configuration
 	InitCommonControls();
 	hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDR_ACCEL));
+    LoadConfig(g_mcwConfig);
+    CreateDarkModeResources();
 
 	// create the dialog    
 	hwnd = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_WIZARD), 0, MainDlgProc);
 
-	if (hwnd == NULL)
-	{
-		MessageBox(NULL, L"Can't create Main window", L"error", MB_ICONERROR);
-		return 0;
-	}
+    if (hwnd != NULL)
+    {
+        // Override the default 'center' position if all values are 
+        // present.
 
-	ShowWindow(hwnd, SW_NORMAL);
+        if (g_mcwConfig.rcWindow.bottom != -1 &&
+            g_mcwConfig.rcWindow.left != -1 &&
+            g_mcwConfig.rcWindow.top != -1 &&
+            g_mcwConfig.rcWindow.right != -1)
+        {
+            MoveWindow(hwnd,
+                g_mcwConfig.rcWindow.left,
+                g_mcwConfig.rcWindow.top,
+                g_mcwConfig.rcWindow.right - g_mcwConfig.rcWindow.left,
+                g_mcwConfig.rcWindow.bottom - g_mcwConfig.rcWindow.top, FALSE);
+        }
 
-	// Message Loop
-	while (GetMessage(&msg, NULL, 0, 0) > 0)
-	{
-		if (!TranslateAccelerator(hwnd, hAccel, &msg))
-		{
-			if (!IsDialogMessage(hwnd, &msg))
-			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-		}
-	}
+        ShowWindow(hwnd, SW_NORMAL);
 
-	return (int) msg.wParam;
+        // Message Loop
+        while (GetMessage(&msg, NULL, 0, 0) > 0)
+        {
+            if (!TranslateAccelerator(hwnd, hAccel, &msg))
+            {
+                if (!IsDialogMessage(hwnd, &msg))
+                {
+                    TranslateMessage(&msg);
+                    DispatchMessage(&msg);
+                }
+            }
+        }
+        SaveConfig(g_mcwConfig);
+    }
+    else
+    {
+        MessageBox(NULL, L"Can't create Main window", L"error", MB_ICONERROR);
+    }
+
+    DestroyDarkModeResources();    
+    return (int)msg.wParam;
 }
 

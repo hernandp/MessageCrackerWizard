@@ -1,10 +1,10 @@
-/*****************************************************************
+/*/*****************************************************************
 
 MIT License
 
 This file is part of Message Cracker Wizard
 
-Copyright (c) 2003-2017 Hernán Di Pietro
+Copyright (c) 2003, 2017, 2018 Hernán Di Pietro
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,16 @@ SOFTWARE.
 
 const  SIZE_T	MAX_WINDOWID_STR_LEN = 32;
 
+// configuration data
+struct MCWCONFIG
+{
+    RECT rcWindow;
+    bool bDarkMode;
+    bool bStayOnTop;
+    int  windowAlpha;
+};
+extern MCWCONFIG g_mcwConfig;
+
 // ownerdrawn listbox handles
 extern HBITMAP  hbmpKeyboard, hbmpMouse, hbmpClipboard, hbmpGeneral, hbmpMDI, hbmpNonClient;
 extern HBITMAP  hbmpWindow;
@@ -44,6 +54,12 @@ extern HBITMAP  hbmpWindow;
 #ifndef LWA_ALPHA
 #define LWA_ALPHA		2
 #endif
+
+const int ALPHA_SOLID = 255;
+const int ALPHA_TRANS_10 = 192;
+const int ALPHA_TRANS_25 = 128;
+const int ALPHA_TRANS_50 = 64;
+const int ALPHA_TRANS_75 = 25;
 
 // typedef for pointer to SetLayeredWindowAttributes
 using PSLWA = DWORD(WINAPI *) (HWND, DWORD, BYTE, DWORD);
@@ -59,10 +75,32 @@ void SetupControls(HWND hwnd);
 void FillListBox(HWND hwnd, UINT filter);
 void UpdateUI(HWND hwnd);
 void EnableControls(HWND hwnd, BOOL fEnabled);
+void LoadConfig(MCWCONFIG&);
+void SaveConfig(const MCWCONFIG&);
+void CreateDarkModeResources();
+void DestroyDarkModeResources();
 
 // ownerdrawn-related functions
 HBITMAP SelectItemBitmap(const DRAWITEMSTRUCT* lpDrawItem);
 void    DrawItemBitmap(const DRAWITEMSTRUCT* lpDrawItem, HBITMAP hPic);
+
+// Dark-Mode resources
+
+enum DarkModeColor : COLORREF
+{
+    Background = RGB(38,38,38),
+    StaticText = RGB(196,196,196),
+    EditBackground = RGB(28,28,28),
+    EditText = RGB(196, 196, 196)
+};
+
+struct DARKMODERESOURCES
+{
+    HBRUSH hbrBackground;
+    HBRUSH hbrEditBackground;
+};
+
+extern DARKMODERESOURCES g_darkModeRes;
 
 // message types
 #define		KEYBOARD		1

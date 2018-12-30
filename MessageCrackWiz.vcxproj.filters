@@ -24,6 +24,12 @@
     <ClCompile Include="ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Reg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MsgCrackWizard.h">
@@ -59,6 +65,30 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="window.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="ico\msgcrk.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\keybrd.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\mouse.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\clpbrd.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\nclient.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\general.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\mdi.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\window.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

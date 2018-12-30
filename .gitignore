@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+/obj/Release
+/bin
+/obj/Debug
+/.vs/MessageCrackWiz
+*.aps
+*.user

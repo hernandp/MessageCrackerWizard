@@ -41,6 +41,13 @@
 #define IDC_BUTTON4                     1037
 #define IDC_FILTERBTN                   1037
 #define IDC_NUMSELECT                   1038
+#define IDC_TARGETCODEGROUP             1039
+#define IDC_OPTIONSGROUPBOX             1040
+#define IDC_TYPEGROUPBOX                1041
+#define IDC_MESSAGES_LABEL              1042
+#define IDC_WINDOWID_LABEL              1043
+#define IDC_HANDLEMSG_LABEL             1044
+#define IDC_MSGFUNCTION_LABEL           1045
 #define ID_HELP40001                    40001
 #define ID_HELP_ABOUT                   40002
 #define ID_EDIT_COPYMACRO               40003
@@ -58,6 +65,8 @@
 #define ID_WINDOWTRANSPARENCY_75        40022
 #define ID_WINDOW_TRANSPARENCY          40023
 #define ID_EDIT_MESSAGEFILTERS          40024
+#define ID_Menu                         40028
+#define ID_VIEW_DARKCOLORSCHEME         40029
 
 // Next default values for new objects
 // 
@@ -65,8 +74,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        118
-#define _APS_NEXT_COMMAND_VALUE         40028
-#define _APS_NEXT_CONTROL_VALUE         1039
+#define _APS_NEXT_COMMAND_VALUE         40030
+#define _APS_NEXT_CONTROL_VALUE         1046
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

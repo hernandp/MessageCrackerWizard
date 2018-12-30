@@ -4,7 +4,7 @@ MIT License
 
 This file is part of Message Cracker Wizard
 
-Copyright (c) 2003-2017 Hern? Di Pietro
+Copyright (c) 2003, 2017, 2018 Hernán Di Pietro
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -72,6 +72,40 @@ void SetupControls(HWND hwnd)
 	// disable necessary controls when there is no selection on list
 	EnableControls(hwnd, FALSE);
 	SendDlgItemMessage(hwnd, IDC_RADWINDOW, BM_SETCHECK, BST_CHECKED, 0);
+
+    HMENU hMenu = GetMenu(hwnd);
+    CheckMenuItem(hMenu, ID_VIEW_DARKCOLORSCHEME, g_mcwConfig.bDarkMode ? MF_CHECKED : MF_UNCHECKED);
+    CheckMenuItem(hMenu, ID_VIEW_STAYONTOP, g_mcwConfig.bStayOnTop ? MF_CHECKED : MF_UNCHECKED);
+
+    switch (g_mcwConfig.windowAlpha)
+    {
+    case ALPHA_SOLID:
+        CheckMenuItem(hMenu, ID_WINDOWTRANSPARENCY_SOLID, MF_CHECKED);
+        break;
+    case ALPHA_TRANS_10:
+        CheckMenuItem(hMenu, ID_WINDOWTRANSPARENCY_10, MF_CHECKED);
+        break;
+    case ALPHA_TRANS_25:
+        CheckMenuItem(hMenu, ID_WINDOWTRANSPARENCY_25, MF_CHECKED);
+        break;
+    case ALPHA_TRANS_50:
+        CheckMenuItem(hMenu, ID_WINDOWTRANSPARENCY_50, MF_CHECKED);
+        break;
+    case ALPHA_TRANS_75:
+        CheckMenuItem(hMenu, ID_WINDOWTRANSPARENCY_75, MF_CHECKED);
+        break;
+    }
+
+    auto hUser32 = LoadLibrary(L"user32.dll");
+    if (hUser32)
+    {
+        SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+
+        PSLWA pSetLayeredWndAttr = (PSLWA)GetProcAddress(hUser32, "SetLayeredWindowAttributes");
+        pSetLayeredWndAttr(hwnd, 0, g_mcwConfig.windowAlpha, LWA_ALPHA);
+        FreeLibrary(hUser32);
+    }
+
 }
 
 //
@@ -214,7 +248,9 @@ void DrawItemBitmap(const DRAWITEMSTRUCT* lpDrawItem, HBITMAP hPic)
 	wchar_t szTextBuf[MAX_PATH] = { 0 };
 
 	// Erase rectangle 
-	FillRect(lpDrawItem->hDC, &lpDrawItem->rcItem, (HBRUSH) (COLOR_WINDOW + 1));
+	FillRect(lpDrawItem->hDC, &lpDrawItem->rcItem,
+        g_mcwConfig.bDarkMode ? g_darkModeRes.hbrBackground :
+        (HBRUSH) (COLOR_WINDOW + 1));
 
 	hdcMem = CreateCompatibleDC(lpDrawItem->hDC);
 	hbmpOld = SelectObject(hdcMem, hPic);
@@ -229,9 +265,30 @@ void DrawItemBitmap(const DRAWITEMSTRUCT* lpDrawItem, HBITMAP hPic)
 	SendMessage(lpDrawItem->hwndItem, LB_GETTEXT,
 		lpDrawItem->itemID, (LPARAM) szTextBuf);
 
+    if (g_mcwConfig.bDarkMode) 
+    {
+        SetTextColor(lpDrawItem->hDC, DarkModeColor::StaticText);
+    }
+
 	TextOut(lpDrawItem->hDC, lpDrawItem->rcItem.left + 18,
 		lpDrawItem->rcItem.top, szTextBuf, (int) wcslen(szTextBuf));
 
 	SelectObject(hdcMem, hbmpOld);
 	DeleteDC(hdcMem);
 }
+
+//
+// Create resources needed for the dark-mode color scheme
+//
+void CreateDarkModeResources()
+{
+    g_darkModeRes.hbrBackground = CreateSolidBrush(DarkModeColor::Background);
+    g_darkModeRes.hbrEditBackground = CreateSolidBrush(DarkModeColor::EditBackground);
+}
+
+void DestroyDarkModeResources()
+{
+    DeleteObject(g_darkModeRes.hbrBackground);
+    DeleteObject(g_darkModeRes.hbrEditBackground);
+}
+

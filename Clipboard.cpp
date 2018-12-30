@@ -4,7 +4,7 @@ MIT License
 
 This file is part of Message Cracker Wizard
 
-Copyright (c) 2003-2017 Hern? Di Pietro
+Copyright (c) 2003, 2017, 2018 Hernán Di Pietro
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ SOFTWARE.
 #include "resource.h"
 
 //
-// Copia la macro al clipboard
+// Copy macro to clipboard
 //
 void CopyMacroToCB(HWND hwnd)
 {
@@ -53,10 +53,12 @@ void CopyMacroToCB(HWND hwnd)
 
 	if (IsDlgButtonChecked(hwnd, IDC_MAKEWNDPROC) == BST_CHECKED)
 	{
-		// construir todo el wndproc
+		// Build Wndproc code
+        //
 		if (IsDlgButtonChecked(hwnd, IDC_RADWINDOW) == BST_CHECKED)
 		{
 			// skip comments if checkbox is enabled
+            //
 			if (IsDlgButtonChecked(hwnd, IDC_NOHEADINGCOMMENTS) == BST_UNCHECKED)
 			{
 				clipText += L"//\r\n// " + std::wstring(WindowID.get()) + L"  Window Procedure\r\n//\r\n";;
