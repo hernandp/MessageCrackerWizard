@@ -294,6 +294,20 @@ IDB_MDI                 BITMAP                  ".\\bmp\\mdi.bmp"
 
 IDB_WINDOW              BITMAP                  ".\\bmp\\window.bmp"
 
+IDB_KEYBOARD_D          BITMAP                  ".\\bmp\\keybrd_d.bmp"
+
+IDB_MOUSE_D             BITMAP                  ".\\bmp\\mouse_d.bmp"
+
+IDB_CLIPBOARD_D         BITMAP                  ".\\bmp\\clpbrd_d.bmp"
+
+IDB_NONCLIENT_D         BITMAP                  ".\\bmp\\nclient_d.bmp"
+
+IDB_GENERAL_D           BITMAP                  ".\\bmp\\general_d.bmp"
+
+IDB_MDI_D               BITMAP                  ".\\bmp\\mdi_d.bmp"
+
+IDB_WINDOW_D            BITMAP                  ".\\bmp\\window_d.bmp"
+
 #endif    // Spanish (Argentina) resources
 /////////////////////////////////////////////////////////////////////////////
 

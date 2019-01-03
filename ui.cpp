@@ -32,6 +32,8 @@ SOFTWARE.
 
 HBITMAP		hbmpKeyboard, hbmpMouse, hbmpClipboard;
 HBITMAP		hbmpGeneral, hbmpNonClient, hbmpMDI, hbmpWindow;
+HBITMAP		hbmpKeyboard_d, hbmpMouse_d, hbmpClipboard_d;
+HBITMAP		hbmpGeneral_d, hbmpNonClient_d, hbmpMDI_d, hbmpWindow_d;
 
 //
 // Set / Unset a window style to a control by Id
@@ -262,27 +264,27 @@ HBITMAP SelectItemBitmap(const DRAWITEMSTRUCT* lpDrawItem)
 		switch (lpDrawItem->itemData)
 		{
 			case KEYBOARD:
-				hPic = hbmpKeyboard;
+                hPic = g_mcwConfig.bDarkMode ? hbmpKeyboard_d : hbmpKeyboard;
 				break;
 
 			case MOUSE:
-				hPic = hbmpMouse;
+				hPic = g_mcwConfig.bDarkMode ? hbmpMouse_d: hbmpMouse;
 				break;
 
 			case CLIPBOARD:
-				hPic = hbmpClipboard;
+				hPic = g_mcwConfig.bDarkMode ? hbmpClipboard_d : hbmpClipboard;
 				break;
 
 			case GENERAL:
-				hPic = hbmpGeneral;
+				hPic = g_mcwConfig.bDarkMode ? hbmpGeneral_d : hbmpGeneral;
 				break;
 
 			case MDI:
-				hPic = hbmpMDI;
+				hPic = g_mcwConfig.bDarkMode ? hbmpMDI_d : hbmpMDI;
 				break;
 
 			case NONCLIENT:
-				hPic = hbmpNonClient;
+				hPic = g_mcwConfig.bDarkMode ? hbmpNonClient_d : hbmpNonClient;
 				break;
 		}
 	}

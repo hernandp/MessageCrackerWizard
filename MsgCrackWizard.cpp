@@ -128,6 +128,27 @@ BOOL Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	hbmpWindow = (HBITMAP) LoadImage(hInstance, MAKEINTRESOURCE(IDB_WINDOW),
 		IMAGE_BITMAP, 16, 16, NULL);
 
+    hbmpKeyboard_d = (HBITMAP)LoadImage(hInstance, MAKEINTRESOURCE(IDB_KEYBOARD_D),
+        IMAGE_BITMAP, 16, 16, NULL);
+
+    hbmpMouse_d = (HBITMAP)LoadImage(hInstance, MAKEINTRESOURCE(IDB_MOUSE_D),
+        IMAGE_BITMAP, 16, 16, NULL);
+
+    hbmpClipboard_d = (HBITMAP)LoadImage(hInstance, MAKEINTRESOURCE(IDB_CLIPBOARD_D),
+        IMAGE_BITMAP, 16, 16, NULL);
+
+    hbmpMDI_d = (HBITMAP)LoadImage(hInstance, MAKEINTRESOURCE(IDB_MDI_D),
+        IMAGE_BITMAP, 16, 16, NULL);
+
+    hbmpNonClient_d = (HBITMAP)LoadImage(hInstance, MAKEINTRESOURCE(IDB_NONCLIENT_D),
+        IMAGE_BITMAP, 16, 16, NULL);
+
+    hbmpGeneral_d = (HBITMAP)LoadImage(hInstance, MAKEINTRESOURCE(IDB_GENERAL_D),
+        IMAGE_BITMAP, 16, 16, NULL);
+
+    hbmpWindow_d = (HBITMAP)LoadImage(hInstance, MAKEINTRESOURCE(IDB_WINDOW_D),
+        IMAGE_BITMAP, 16, 16, NULL);
+
 
 	// Disable window transparency option if not present on current OS
 	HMODULE hUser32;

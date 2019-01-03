@@ -43,8 +43,8 @@ struct MCWCONFIG
 extern MCWCONFIG g_mcwConfig;
 
 // ownerdrawn listbox handles
-extern HBITMAP  hbmpKeyboard, hbmpMouse, hbmpClipboard, hbmpGeneral, hbmpMDI, hbmpNonClient;
-extern HBITMAP  hbmpWindow;
+extern HBITMAP  hbmpKeyboard, hbmpMouse, hbmpClipboard, hbmpGeneral, hbmpMDI, hbmpNonClient, hbmpWindow;
+extern HBITMAP  hbmpKeyboard_d, hbmpMouse_d, hbmpClipboard_d, hbmpGeneral_d, hbmpMDI_d, hbmpNonClient_d, hbmpWindow_d;
 
 // define for window transparency
 #ifndef WS_EX_LAYERED

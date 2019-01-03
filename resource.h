@@ -14,7 +14,14 @@
 #define IDB_GENERAL                     114
 #define IDB_MDI                         115
 #define IDB_WINDOW                      116
-#define IDD_FILTER                      117
+#define IDB_KEYBOARD_D                  117
+#define IDB_MOUSE_D                     118
+#define IDB_CLIPBOARD_D                 119
+#define IDB_NONCLIENT_D                 120
+#define IDB_GENERAL_D                   121
+#define IDB_MDI_D                       122
+#define IDB_WINDOW_D                    123
+#define IDD_FILTER                      124
 #define IDC_MESSAGES                    1001
 #define IDCOPY                          1002
 #define IDC_BUTTON1                     1003
