@@ -34,6 +34,23 @@ HBITMAP		hbmpKeyboard, hbmpMouse, hbmpClipboard;
 HBITMAP		hbmpGeneral, hbmpNonClient, hbmpMDI, hbmpWindow;
 
 //
+// Set / Unset a window style to a control by Id
+//
+static void SetWindowStyle(HWND hwndParent, UINT childId, DWORD dwStyle)
+{
+    HWND hWnd = GetDlgItem(hwndParent, childId);
+    SetWindowLong(hWnd, GWL_STYLE, GetWindowLong(hWnd, GWL_STYLE) | dwStyle);
+    SetWindowPos(hWnd, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+}
+
+static void RemoveWindowStyle(HWND hwndParent, UINT childId, DWORD dwStyle)
+{
+    HWND hWnd = GetDlgItem(hwndParent, childId);
+    SetWindowLong(hWnd, GWL_STYLE, GetWindowLong(hWnd, GWL_STYLE) & ~dwStyle);
+    SetWindowPos(hWnd, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+}
+
+//
 // fill the list box with the messages (and apply filters)
 //
 void FillListBox(HWND hwnd, UINT filter)
@@ -77,6 +94,22 @@ void SetupControls(HWND hwnd)
     CheckMenuItem(hMenu, ID_VIEW_DARKCOLORSCHEME, g_mcwConfig.bDarkMode ? MF_CHECKED : MF_UNCHECKED);
     CheckMenuItem(hMenu, ID_VIEW_STAYONTOP, g_mcwConfig.bStayOnTop ? MF_CHECKED : MF_UNCHECKED);
 
+   /* if (g_mcwConfig.bDarkMode)
+    {
+        MENUINFO mi = { 0 };
+        mi.cbSize = sizeof(mi);
+        mi.fMask = MIM_BACKGROUND | MIM_APPLYTOSUBMENUS;
+        mi.hbrBack = g_darkModeRes.hbrBackground;
+
+        SetMenuInfo(hMenu, &mi);
+    }
+    else
+    {
+
+    }*/
+
+    SetWindowPos(hwnd, g_mcwConfig.bStayOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    
     switch (g_mcwConfig.windowAlpha)
     {
     case ALPHA_SOLID:
@@ -96,6 +129,11 @@ void SetupControls(HWND hwnd)
         break;
     }
 
+    if (g_mcwConfig.bDarkMode)
+        EnableOwnerdrawnControls(hwnd);
+    else
+        DisableOwnerdrawnControls(hwnd);
+    
     auto hUser32 = LoadLibrary(L"user32.dll");
     if (hUser32)
     {
@@ -194,6 +232,23 @@ void EnableControls(HWND hwnd, BOOL fEnabled)
 	EnableWindow(GetDlgItem(hwnd, IDC_COPYFUNC), fEnabled);
 }
 
+
+void EnableOwnerdrawnControls(HWND hwnd)
+{
+    SetWindowStyle(hwnd, IDC_COPYFUNC, BS_OWNERDRAW);
+    SetWindowStyle(hwnd, IDC_COPYMACRO, BS_OWNERDRAW);
+    SetWindowStyle(hwnd, IDC_CLOSE, BS_OWNERDRAW);
+    SetWindowStyle(hwnd, IDC_FILTERBTN, BS_OWNERDRAW);
+}
+
+void DisableOwnerdrawnControls(HWND hwnd)
+{
+    RemoveWindowStyle(hwnd, IDC_COPYFUNC, BS_OWNERDRAW);
+    RemoveWindowStyle(hwnd, IDC_COPYMACRO, BS_OWNERDRAW);
+    RemoveWindowStyle(hwnd, IDC_CLOSE, BS_OWNERDRAW);
+    RemoveWindowStyle(hwnd, IDC_FILTERBTN, BS_OWNERDRAW);
+}
+
 //
 // select bitmap for ownerdrawn control based on msginfo[].fType
 //
@@ -284,11 +339,18 @@ void CreateDarkModeResources()
 {
     g_darkModeRes.hbrBackground = CreateSolidBrush(DarkModeColor::Background);
     g_darkModeRes.hbrEditBackground = CreateSolidBrush(DarkModeColor::EditBackground);
+    g_darkModeRes.hbrFrame = CreateSolidBrush(DarkModeColor::Frame);
+    g_darkModeRes.hbrButtonFace = CreateSolidBrush(DarkModeColor::ButtonFace);
+    g_darkModeRes.hbrButtonFaceHilite = CreateSolidBrush(DarkModeColor::ButtonFaceHilite);
 }
 
 void DestroyDarkModeResources()
 {
+    DeleteObject(g_darkModeRes.hbrButtonFaceHilite);
+    DeleteObject(g_darkModeRes.hbrButtonFace);
+    DeleteObject(g_darkModeRes.hbrFrame);
     DeleteObject(g_darkModeRes.hbrBackground);
     DeleteObject(g_darkModeRes.hbrEditBackground);
+
 }
 

@@ -72,6 +72,7 @@ UINT                g_fFilter;
 MCWCONFIG           g_mcwConfig;
 DARKMODERESOURCES   g_darkModeRes;
 
+
 //
 // Returns a child window RECT in parent-window  coordinate space
 //
@@ -84,6 +85,15 @@ static RECT GetChildWindowRect(HWND hwndParent, UINT childId)
     MapWindowPoints(GetDlgItem(hwndParent, childId), hwndParent, (LPPOINT)&rc, 2);
     return rc;
 }
+
+static RECT GetChildWindowRect(HWND hwndParent, HWND hwndChild)
+{
+    RECT rc;
+    GetClientRect(hwndChild, &rc);
+    MapWindowPoints(hwndChild, hwndParent, (LPPOINT)&rc, 2);
+    return rc;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Process WM_CREATE message for window/dialog: Cls
@@ -341,6 +351,10 @@ void Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 			break;
 
         case ID_VIEW_DARKCOLORSCHEME:
+            
+            if (!g_mcwConfig.bDarkMode)
+                MessageBox(hwnd, L"WARNING, This is a work-in-progress feature. You are invited to fix it in source ;)", L"Dark Mode", MB_ICONWARNING);
+            
             hMenu = GetMenu(hwnd);
 
             // invert menu checkmark
@@ -348,10 +362,15 @@ void Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
                 MF_CHECKED) == MF_CHECKED ? MF_UNCHECKED : MF_CHECKED);
 
             if (GetMenuState(hMenu, ID_VIEW_DARKCOLORSCHEME, MF_BYCOMMAND) & MF_CHECKED)
+            {
                 g_mcwConfig.bDarkMode = true;
+                EnableOwnerdrawnControls(hwnd);               
+            }
             else
+            {
+                DisableOwnerdrawnControls(hwnd);
                 g_mcwConfig.bDarkMode = false;
-
+            }
             InvalidateRect(hwnd, NULL, TRUE);
             break;
 
@@ -477,40 +496,73 @@ void Cls_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
 	int     x = lpDrawItem->rcItem.left;
 	int     y = lpDrawItem->rcItem.top;
 
-	switch (lpDrawItem->itemAction)
-	{
-		case ODA_DRAWENTIRE:
-		case ODA_SELECT:
+    if (lpDrawItem->CtlID == IDC_MESSAGES)
+    {
+        switch (lpDrawItem->itemAction)
+        {
+        case ODA_DRAWENTIRE:
+        case ODA_SELECT:
 
-			// Draw message bitmap depending on type
-			DrawItemBitmap(lpDrawItem, SelectItemBitmap(lpDrawItem));
+            // Draw message bitmap depending on type
+            DrawItemBitmap(lpDrawItem, SelectItemBitmap(lpDrawItem));
 
-			if (lpDrawItem->itemState & ODS_SELECTED)
-			{
-				// Draw selection state (uses new RECT to avoid erasing bitmap)     
-				RECT rsel;
-				CopyRect(&rsel, &lpDrawItem->rcItem);
-				rsel.left += 16;
+            if (lpDrawItem->itemState & ODS_SELECTED)
+            {
+                // Draw selection state (uses new RECT to avoid erasing bitmap)     
+                RECT rsel;
+                CopyRect(&rsel, &lpDrawItem->rcItem);
+                rsel.left += 16;
 
-				SetBkMode(lpDrawItem->hDC, TRANSPARENT);
-				SetTextColor(lpDrawItem->hDC, RGB(0xff, 0xff, 0xff));
-				FillRect(lpDrawItem->hDC, &rsel, (HBRUSH) (COLOR_HIGHLIGHT + 1));
+                SetBkMode(lpDrawItem->hDC, TRANSPARENT);
+                SetTextColor(lpDrawItem->hDC, RGB(0xff, 0xff, 0xff));
+                FillRect(lpDrawItem->hDC, &rsel, (HBRUSH)(COLOR_HIGHLIGHT + 1));
 
-				// Draw Text
-				SendMessage(lpDrawItem->hwndItem, LB_GETTEXT,
-					lpDrawItem->itemID, (LPARAM) szTextBuf);
-				SetBkMode(lpDrawItem->hDC, TRANSPARENT);
-				TextOut(lpDrawItem->hDC, lpDrawItem->rcItem.left + 18,
-					lpDrawItem->rcItem.top, szTextBuf, (int) wcslen(szTextBuf));
-			}
-			else
-			{
-				// Normal State
-				SetTextColor(lpDrawItem->hDC, 0);
-				DrawItemBitmap(lpDrawItem, SelectItemBitmap(lpDrawItem));
-			}
-			break;
-	}
+                // Draw Text
+                SendMessage(lpDrawItem->hwndItem, LB_GETTEXT,
+                    lpDrawItem->itemID, (LPARAM)szTextBuf);
+                SetBkMode(lpDrawItem->hDC, TRANSPARENT);
+                TextOut(lpDrawItem->hDC, lpDrawItem->rcItem.left + 18,
+                    lpDrawItem->rcItem.top, szTextBuf, (int)wcslen(szTextBuf));
+            }
+            else
+            {
+                // Normal State
+                SetTextColor(lpDrawItem->hDC, 0);
+                DrawItemBitmap(lpDrawItem, SelectItemBitmap(lpDrawItem));
+            }
+            break;
+        }
+    }
+
+    if (lpDrawItem->CtlType == ODT_BUTTON)
+    {
+
+        SetBkColor(lpDrawItem->hDC, DarkModeColor::EditBackground);
+        SetBkMode(lpDrawItem->hDC, TRANSPARENT);
+        FillRect(lpDrawItem->hDC, &lpDrawItem->rcItem, g_darkModeRes.hbrButtonFace);
+        SetTextColor(lpDrawItem->hDC, DarkModeColor::StaticText);
+
+        if (lpDrawItem->itemState & ODS_DISABLED)
+        {
+            FillRect(lpDrawItem->hDC, &lpDrawItem->rcItem, g_darkModeRes.hbrButtonFace);
+            SetTextColor(lpDrawItem->hDC, DarkModeColor::TextDisabled);
+        }
+
+        if (lpDrawItem->itemState & ODS_HOTLIGHT)
+        {
+            SetTextColor(lpDrawItem->hDC, DarkModeColor::EditText);
+            FillRect(lpDrawItem->hDC, &lpDrawItem->rcItem, GetSysColorBrush(COLOR_WINDOW));
+        }
+
+        SetBkColor(lpDrawItem->hDC, DarkModeColor::EditBackground);
+        SetBkMode(lpDrawItem->hDC, TRANSPARENT);
+
+        FrameRect(lpDrawItem->hDC, &lpDrawItem->rcItem, g_darkModeRes.hbrFrame);
+
+        GetDlgItemText(hwnd, lpDrawItem->CtlID, szTextBuf, MAX_PATH);
+        DrawText(lpDrawItem->hDC, szTextBuf, -1, (RECT*)&lpDrawItem->rcItem, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+    }
 }
 
 //
@@ -518,8 +570,11 @@ void Cls_OnDrawItem(HWND hwnd, const DRAWITEMSTRUCT * lpDrawItem)
 //
 void Cls_OnMeasureItem(HWND hwnd, MEASUREITEMSTRUCT * lpMeasureItem)
 {
-	// Set control size
-	lpMeasureItem->itemHeight = 16;
+    if (lpMeasureItem->CtlID == IDC_MESSAGES)
+    {
+        // Set control size
+        lpMeasureItem->itemHeight = 16;
+    }	
 }
 
 void Cls_OnClose(HWND hwnd)
@@ -551,11 +606,18 @@ void Cls_OnPaint(HWND hwnd)
 HBRUSH Cls_OnCtlColorStatic(HWND hwnd, HDC hdc, HWND hwndChild, int type)
 {
     if (g_mcwConfig.bDarkMode)
-    {
+    {   
+        /*wchar_t textBuffer[255];
+        RECT rc;
+        GetClientRect(hwndChild, &rc);
+
+        GetWindowText(hwndChild, textBuffer, _countof(textBuffer));
+        */
         SetTextColor(hdc, DarkModeColor::StaticText);
         SetBkColor(hdc, DarkModeColor::Background);
-        return g_darkModeRes.hbrBackground;
+       /* DrawText(hdc, textBuffer, -1, &rc, DT_SINGLELINE);*/
 
+        return g_darkModeRes.hbrBackground;
     }
     return (HBRUSH) FALSE;
 }
@@ -574,16 +636,24 @@ HBRUSH Cls_OnCtlColorEdit(HWND hwnd, HDC hdc, HWND hwndChild, int type)
 
 HBRUSH Cls_OnCtlColorBtn(HWND hwnd, HDC hdc, HWND hwndChild, int type)
 {
-    if (g_mcwConfig.bDarkMode)
+  /*  if (g_mcwConfig.bDarkMode)
     {
         SetTextColor(hdc, DarkModeColor::EditText);
         SetBkColor(hdc, DarkModeColor::EditBackground);
-
-        RECT rc;
-        GetClientRect(hwndChild, &rc);
-        DrawText(hdc, L"XXX", _countof(L"XXX") - 1, &rc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         return g_darkModeRes.hbrEditBackground;
-    }
+    }*/
+
+    return (HBRUSH)FALSE;
+}
+
+HBRUSH Cls_OnCtlColorScrollbar(HWND hwnd, HDC hdc, HWND hwndChild, int type)
+{
+    /*if (g_mcwConfig.bDarkMode)
+      {
+          SetTextColor(hdc, DarkModeColor::EditText);
+          SetBkColor(hdc, DarkModeColor::EditBackground);
+          return g_darkModeRes.hbrEditBackground;
+      }*/
 
     return (HBRUSH)FALSE;
 }
@@ -751,6 +821,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         HANDLE_MSG(hwnd, WM_CTLCOLORSTATIC, Cls_OnCtlColorStatic);
         HANDLE_MSG(hwnd, WM_CTLCOLORBTN, Cls_OnCtlColorBtn);
         HANDLE_MSG(hwnd, WM_CTLCOLOREDIT, Cls_OnCtlColorEdit);
+        //HANDLE_MSG(hwnd, WM_CTLCOLORSCROLLBAR, Cls_OnCtlColorScrollbar);
 
 		default:
 			return FALSE;

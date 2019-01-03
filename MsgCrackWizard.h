@@ -77,10 +77,13 @@ void UpdateUI(HWND hwnd);
 void EnableControls(HWND hwnd, BOOL fEnabled);
 void LoadConfig(MCWCONFIG&);
 void SaveConfig(const MCWCONFIG&);
+void EnableOwnerdrawnControls(HWND hwndDlg);
+void DisableOwnerdrawnControls(HWND hwndDlg);
 void CreateDarkModeResources();
 void DestroyDarkModeResources();
 
 // ownerdrawn-related functions
+
 HBITMAP SelectItemBitmap(const DRAWITEMSTRUCT* lpDrawItem);
 void    DrawItemBitmap(const DRAWITEMSTRUCT* lpDrawItem, HBITMAP hPic);
 
@@ -89,15 +92,23 @@ void    DrawItemBitmap(const DRAWITEMSTRUCT* lpDrawItem, HBITMAP hPic);
 enum DarkModeColor : COLORREF
 {
     Background = RGB(38,38,38),
+    Frame = RGB(64,64,64),
     StaticText = RGB(196,196,196),
     EditBackground = RGB(28,28,28),
-    EditText = RGB(196, 196, 196)
+    EditText = RGB(196, 196, 196),
+    ButtonFace = RGB(48,48,48),
+    ButtonFaceHilite = RGB(80,80,80),
+    TextDisabled = RGB(40,40,40)
+
 };
 
 struct DARKMODERESOURCES
 {
     HBRUSH hbrBackground;
     HBRUSH hbrEditBackground;
+    HBRUSH hbrFrame;
+    HBRUSH hbrButtonFace;
+    HBRUSH hbrButtonFaceHilite;
 };
 
 extern DARKMODERESOURCES g_darkModeRes;
