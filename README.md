@@ -39,3 +39,10 @@ Suggestions are welcome.
   * Changed to Unicode for all strings
   * Fixed analysis, warnings, and related issues
   * Changed to MIT license
+* 2.5
+  * Fix memory corruption error 
+  * Fix non-dialog procedure generating 'hwndDlg' instead of 'hwnd' 
+  * Added re-sizable window feature.
+  * Added 'Dark Mode' color scheme (WIP)
+  * Settings are saved/retrieved  to/from Registry
+  * Removed 'Hide Target Code' option
