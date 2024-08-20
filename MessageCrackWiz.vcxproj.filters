@@ -91,6 +91,27 @@
     <Image Include="bmp\window.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="bmp\keybrd_d.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\mouse_d.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\clpbrd_d.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\nclient_d.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\general_d.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\mdi_d.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\window_d.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MessageCrackWiz.rc">
