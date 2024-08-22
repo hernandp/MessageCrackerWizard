@@ -858,7 +858,8 @@ BOOL CALLBACK FilterDlg_DlgProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lP
 
 int user_ListBox_FindString(HWND hListBox, int beginPos, const WCHAR* searchStr) {
     int count = ListBox_GetCount(hListBox);
-    WCHAR strItemText[512] = { 0 };
+    const int MAX_ITEM_TEXT = 512;
+    WCHAR strItemText[MAX_ITEM_TEXT] = { 0 };
 
     int offset = -1;
     if (g_fr.Flags & FR_DOWN)
@@ -869,12 +870,11 @@ int user_ListBox_FindString(HWND hListBox, int beginPos, const WCHAR* searchStr)
     for (int i = beginPos; i < count && i >= 0; i += offset) {
         ListBox_GetText(hListBox, i, strItemText);
 
-        // 这里使用wcsstr来查找子字符串
         if (wcsstr(strItemText, searchStr) != NULL) {
-            return i;  // 返回第一个匹配项的索引
+            return i; 
         }
     }
-    return LB_ERR;  // 没有找到匹配项
+    return LB_ERR; 
 }
 
 

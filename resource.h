@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ 生成的包含文件。
-// 供 MessageCrackWiz.rc 使用
+// Microsoft Visual C++ generated include file.
+// Used by MessageCrackWiz.rc
 //
 #define IDD_WIZARD                      101
 #define IDR_MENU1                       102

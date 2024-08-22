@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 西班牙语(西班牙，国际风格) resources
+// Spanish (Spain, International Sort) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESN)
 LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_MODERN
@@ -44,12 +44,12 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-#endif    // 西班牙语(西班牙，国际风格) resources
+#endif    // Spanish (Spain, International Sort) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// 西班牙语(阿根廷) resources
+// Spanish (Spain, International Sort) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESS)
 LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_ARGENTINA
@@ -191,7 +191,7 @@ BEGIN
         MENUITEM "Message Fi&lters...\tCtrl+L", ID_EDIT_MESSAGEFILTERS
         MENUITEM SEPARATOR
         MENUITEM "Search listbox...\tCtrl+S",   ID_EDIT_SEARCHLISTBOX
-        MENUITEM "Clear All Selects",           ID_EDIT_CLEARALLSELECTS
+        MENUITEM "Clear selection",           ID_EDIT_CLEARALLSELECTS
     END
     POPUP "&View"
     BEGIN
@@ -312,7 +312,7 @@ IDB_MDI_D               BITMAP                  ".\\bmp\\mdi_d.bmp"
 
 IDB_WINDOW_D            BITMAP                  ".\\bmp\\window_d.bmp"
 
-#endif    // 西班牙语(阿根廷) resources
+#endif    // Spanish (Spain, International Sort) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
