@@ -37,7 +37,7 @@ void LoadConfig(MCWCONFIG& mcw)
     {
         mcw.rcWindow = { -1,-1,-1,-1 };
 
-        DWORD cbData;
+        DWORD cbData = 0;
         DWORD dwDarkMode = 0, dwStayTop = -1, dwWindowAlpha = 255;
         RegQueryValueEx(hk, L"wRect.Top", NULL, NULL, (BYTE*)&mcw.rcWindow.top, &cbData);
         RegQueryValueEx(hk, L"wRect.Left", NULL, NULL, (BYTE*)&mcw.rcWindow.left, &cbData);
