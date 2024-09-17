@@ -4,7 +4,7 @@ MIT License
 
 This file is part of Message Cracker Wizard
 
-Copyright (c) 2003, 2017, 2018 Hernán Di Pietro
+Copyright (c) 2003, 2017, 2018, 2024 Hernán Di Pietro
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,9 +29,9 @@ SOFTWARE.
 	Windows API Message Cracker Wizard Tool
 	for easier use of WINDOWSX.H message cracking macros
 
-	(c) 2003, 2017, 2018 Hernan Di Pietro
+	(c) 2003, 2017, 2018, 2024 Hernan Di Pietro
 
-	Release 2.5
+	Release 2.6
 
 	version history
 	1.0 - first release
@@ -59,6 +59,8 @@ SOFTWARE.
           + added 'Dark Mode' color scheme
           + settings are saved/retrieved  to/from Registry
           * removed 'Hide Target Code' option
+    2.6   + added Search in listbox feature, clear selections and enhancements (thanks @HHsomeHand)
+          - fix MFC-dependent afxres.h in resource file
 
 *******************************************************************************/
 
@@ -916,7 +918,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             }
             else
             {
-                MessageBox(g_hFindDlg, L"can't find text in listbox", L"not found", MB_OK);
+                MessageBox(g_hFindDlg, L"Cannot find such text in listbox", L"Not found", MB_OK | MB_ICONINFORMATION);
             }
         } // END  else if (g_fr.Flags & FR_FINDNEXT)
     } // END  if (msg == g_idFindMessage)

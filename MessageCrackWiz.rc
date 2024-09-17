@@ -68,7 +68,7 @@ LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_ARGENTINA
 IDD_WIZARD DIALOGEX 0, 0, 327, 242
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_TOPMOST | WS_EX_WINDOWEDGE | WS_EX_APPWINDOW
-CAPTION "Message Cracker Wizard 2.5"
+CAPTION "Message Cracker Wizard 2.6"
 MENU IDR_MENU1
 CLASS "MessageCrackerWizard"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -104,8 +104,8 @@ BEGIN
     DEFPUSHBUTTON   "Ok",IDOK,101,71,50,14
     ICON            IDI_MCWICON,IDC_STATIC,7,7,20,20
     LTEXT           "Message Cracker Wizard Utility for Windows API Development",IDC_STATIC,37,7,209,10
-    LTEXT           "(c) 2003,2017,2018 Hernán Di Pietro.",IDC_STATIC,36,28,130,8
-    LTEXT           "Version 2.5",IDC_STATIC,37,15,137,10
+    LTEXT           "(c) 2003,2017,2018, 2024 Hernán Di Pietro.",IDC_STATIC,36,28,150,8
+    LTEXT           "Version 2.6",IDC_STATIC,37,15,137,10
     LTEXT           "https://github.com/hernandp",IDC_STATIC,37,47,119,8
 END
 
