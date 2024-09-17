@@ -46,3 +46,7 @@ Suggestions are welcome.
   * Added 'Dark Mode' color scheme (WIP)
   * Settings are saved/retrieved  to/from Registry
   * Removed 'Hide Target Code' option
+* 2.6
+  * Added Search in listbox feature, clear selections and enhancements (thanks @HHsomeHand)
+  * fix MFC-dependent afxres.h in resource file
+  * Solved Misc build issues for latest  VC environment.
