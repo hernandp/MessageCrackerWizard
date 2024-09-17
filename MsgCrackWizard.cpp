@@ -72,6 +72,12 @@ UINT                g_fFilter;
 MCWCONFIG           g_mcwConfig;
 DARKMODERESOURCES   g_darkModeRes;
 
+// search listbox (ctrl + s)
+WCHAR               g_strFindWhat[80];
+UINT                g_idFindMessage;
+HWND                g_hFindDlg;
+FINDREPLACEW        g_fr;
+
 
 //
 // Returns a child window RECT in parent-window  coordinate space
@@ -100,7 +106,18 @@ static RECT GetChildWindowRect(HWND hwndParent, HWND hwndChild)
 //
 BOOL Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
-	HINSTANCE hInstance = GetModuleHandle(NULL);
+    HINSTANCE hInstance = GetModuleHandle(NULL);
+
+    // find commdlg init
+    g_fr = { 0 };
+    g_fr.lStructSize = sizeof(FINDREPLACEW);
+    g_fr.hwndOwner = hwnd;
+    g_fr.hInstance = hInstance;
+    g_fr.Flags |= FR_DOWN | FR_HIDEWHOLEWORD  | FR_HIDEMATCHCASE;
+    g_fr.lpstrFindWhat = g_strFindWhat;
+    g_fr.wFindWhatLen = _countof(g_strFindWhat);
+
+    g_idFindMessage = RegisterWindowMessage(FINDMSGSTRING);
 
 	// Allocate memory for the message list box
 	SendDlgItemMessage(hwnd, IDC_MESSAGES, LB_INITSTORAGE, (WPARAM) NUMMSG,
@@ -371,6 +388,20 @@ void Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 
 			break;
 
+        case ID_EDIT_SEARCHLISTBOX:
+            if (g_hFindDlg == NULL)
+            {
+                g_fr.Flags &= ~FR_DIALOGTERM;
+                g_hFindDlg = FindTextW(&g_fr);
+            }
+
+            break;
+
+        case ID_EDIT_CLEARALLSELECTS:
+            ListBox_SetSel(GetDlgItem(hwnd, IDC_MESSAGES), FALSE, -1);
+            UpdateUI(hwnd);
+            break;
+
         case ID_VIEW_DARKCOLORSCHEME:
             
             if (!g_mcwConfig.bDarkMode)
@@ -421,6 +452,9 @@ void Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 			SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) & ~WS_EX_LAYERED);
             UpdateWindow(hwnd);
             g_mcwConfig.windowAlpha = ALPHA_SOLID;
+
+            hMenu = GetMenu(hwnd);
+            CheckMenuRadioItem(hMenu, ID_WINDOWTRANSPARENCY_SOLID, ID_WINDOWTRANSPARENCY_75, ID_WINDOWTRANSPARENCY_SOLID, MF_BYCOMMAND);
 			break;
 
 		case ID_WINDOWTRANSPARENCY_10:
@@ -433,6 +467,8 @@ void Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 			if (id == ID_WINDOWTRANSPARENCY_50)    bAlpha = ALPHA_TRANS_50;
 			if (id == ID_WINDOWTRANSPARENCY_75)    bAlpha = ALPHA_TRANS_75;
 
+            hMenu = GetMenu(hwnd);
+            CheckMenuRadioItem(hMenu, ID_WINDOWTRANSPARENCY_SOLID, ID_WINDOWTRANSPARENCY_75, id, MF_BYCOMMAND);
 
 			// modify window style        
 			SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
@@ -722,6 +758,8 @@ BOOL FilterDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	CheckDlgButton(hwnd, IDC_FMDI, (g_fFilter & MDI ? BST_CHECKED : BST_UNCHECKED));
 	CheckDlgButton(hwnd, IDC_FMOUSE, (g_fFilter & MOUSE ? BST_CHECKED : BST_UNCHECKED));
 
+   
+
 	return 1L;
 }
 
@@ -818,6 +856,27 @@ BOOL CALLBACK FilterDlg_DlgProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lP
 	}
 }
 
+int user_ListBox_FindString(HWND hListBox, int beginPos, const WCHAR* searchStr) {
+    int count = ListBox_GetCount(hListBox);
+    const int MAX_ITEM_TEXT = 512;
+    WCHAR strItemText[MAX_ITEM_TEXT] = { 0 };
+
+    int offset = -1;
+    if (g_fr.Flags & FR_DOWN)
+    {
+        offset = 1;
+    }
+
+    for (int i = beginPos; i < count && i >= 0; i += offset) {
+        ListBox_GetText(hListBox, i, strItemText);
+
+        if (wcsstr(strItemText, searchStr) != NULL) {
+            return i; 
+        }
+    }
+    return LB_ERR; 
+}
+
 
 // ----------------------------------------------------------------------------
 //
@@ -826,6 +885,42 @@ BOOL CALLBACK FilterDlg_DlgProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM lP
 // ----------------------------------------------------------------------------
 BOOL CALLBACK MainDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    if (msg == g_idFindMessage)
+    {
+        if (g_fr.Flags & FR_DIALOGTERM)
+        {
+            g_hFindDlg = NULL;
+        }
+        else if (g_fr.Flags & FR_FINDNEXT)
+        {
+            HWND hListBox = GetDlgItem(hwnd, IDC_MESSAGES);
+            _wcsupr_s(g_fr.lpstrFindWhat, _countof(g_strFindWhat));
+
+            int caretIndex = ListBox_GetCaretIndex(hListBox);
+            int topIndex = ListBox_GetTopIndex(hListBox);
+            int beginPos = 0;
+
+            if (g_fr.Flags & FR_DOWN)
+            {
+                beginPos = max(caretIndex, topIndex) + 1;
+            }
+            else 
+            {
+                beginPos = topIndex - 1;
+            }
+
+            int pos = user_ListBox_FindString(hListBox, beginPos, g_fr.lpstrFindWhat);
+            if (pos != LB_ERR)
+            {
+                ListBox_SetTopIndex(hListBox, pos);
+            }
+            else
+            {
+                MessageBox(g_hFindDlg, L"can't find text in listbox", L"not found", MB_OK);
+            }
+        } // END  else if (g_fr.Flags & FR_FINDNEXT)
+    } // END  if (msg == g_idFindMessage)
+
 	switch (msg)
 	{
 		HANDLE_MSG(hwnd, WM_CLOSE, Cls_OnClose);
@@ -860,7 +955,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE prevInstance,
 {
 	static wchar_t szClassName[] = L"MessageCrackerWizard";
 	HWND        hwnd;
-	MSG         msg;
+    MSG         msg;
 	WNDCLASSEX  wcex;
 	HACCEL      hAccel;
 

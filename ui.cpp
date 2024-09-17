@@ -112,24 +112,28 @@ void SetupControls(HWND hwnd)
 
     SetWindowPos(hwnd, g_mcwConfig.bStayOnTop ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     
+	UINT uID = ID_WINDOWTRANSPARENCY_SOLID;
     switch (g_mcwConfig.windowAlpha)
     {
     case ALPHA_SOLID:
-        CheckMenuItem(hMenu, ID_WINDOWTRANSPARENCY_SOLID, MF_CHECKED);
+		uID = ID_WINDOWTRANSPARENCY_SOLID;
         break;
     case ALPHA_TRANS_10:
-        CheckMenuItem(hMenu, ID_WINDOWTRANSPARENCY_10, MF_CHECKED);
+		uID = ID_WINDOWTRANSPARENCY_10;
         break;
     case ALPHA_TRANS_25:
-        CheckMenuItem(hMenu, ID_WINDOWTRANSPARENCY_25, MF_CHECKED);
+		uID = ID_WINDOWTRANSPARENCY_25;
         break;
     case ALPHA_TRANS_50:
-        CheckMenuItem(hMenu, ID_WINDOWTRANSPARENCY_50, MF_CHECKED);
+		uID = ID_WINDOWTRANSPARENCY_50;
         break;
     case ALPHA_TRANS_75:
-        CheckMenuItem(hMenu, ID_WINDOWTRANSPARENCY_75, MF_CHECKED);
+		uID = ID_WINDOWTRANSPARENCY_75;
         break;
     }
+
+	CheckMenuRadioItem(hMenu, ID_WINDOWTRANSPARENCY_SOLID, ID_WINDOWTRANSPARENCY_75, uID, MF_BYCOMMAND);
+
 
     if (g_mcwConfig.bDarkMode)
         EnableOwnerdrawnControls(hwnd);
