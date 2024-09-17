@@ -18,11 +18,12 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
@@ -125,12 +126,19 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="bmp\clpbrd.bmp" />
+    <Image Include="bmp\clpbrd_d.bmp" />
     <Image Include="bmp\general.bmp" />
+    <Image Include="bmp\general_d.bmp" />
     <Image Include="bmp\keybrd.bmp" />
+    <Image Include="bmp\keybrd_d.bmp" />
     <Image Include="bmp\mdi.bmp" />
+    <Image Include="bmp\mdi_d.bmp" />
     <Image Include="bmp\mouse.bmp" />
+    <Image Include="bmp\mouse_d.bmp" />
     <Image Include="bmp\nclient.bmp" />
+    <Image Include="bmp\nclient_d.bmp" />
     <Image Include="bmp\window.bmp" />
+    <Image Include="bmp\window_d.bmp" />
     <Image Include="clpbrd.bmp" />
     <Image Include="general.bmp" />
     <Image Include="ico\msgcrk.ico" />

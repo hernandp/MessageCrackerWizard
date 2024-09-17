@@ -37,4 +37,5 @@ SOFTWARE.
 #include <string>
 #include <memory>
 #include <cassert>
+#include <commdlg.h>
 #endif

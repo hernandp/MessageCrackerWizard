@@ -46,7 +46,7 @@ END
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Spanish (Argentina) resources
+// Spanish (Spain, International Sort) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESS)
 LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_ARGENTINA
@@ -186,6 +186,9 @@ BEGIN
         MENUITEM "Copy &Function\tCtrl+F",      ID_EDIT_COPYFUNCTION
         MENUITEM SEPARATOR
         MENUITEM "Message Fi&lters...\tCtrl+L", ID_EDIT_MESSAGEFILTERS
+        MENUITEM SEPARATOR
+        MENUITEM "Search listbox...\tCtrl+S",   ID_EDIT_SEARCHLISTBOX
+        MENUITEM "Clear selection",           ID_EDIT_CLEARALLSELECTS
     END
     POPUP "&View"
     BEGIN
@@ -226,9 +229,10 @@ IDI_MCWICON             ICON                    "ico\\msgcrk.ico"
 IDR_ACCEL ACCELERATORS
 BEGIN
     "^L",           ID_EDIT_MESSAGEFILTERS, ASCII,  NOINVERT
+    VK_F11,         ID_VIEW_SHOWTARGETCODE, VIRTKEY, CONTROL, NOINVERT
     "^F",           IDC_COPYFUNC,           ASCII,  NOINVERT
     "^M",           IDC_COPYMACRO,          ASCII,  NOINVERT
-    VK_F11,         ID_VIEW_SHOWTARGETCODE, VIRTKEY, CONTROL, NOINVERT
+    "^S",           ID_EDIT_SEARCHLISTBOX,  ASCII,  NOINVERT
 END
 
 
@@ -305,7 +309,7 @@ IDB_MDI_D               BITMAP                  ".\\bmp\\mdi_d.bmp"
 
 IDB_WINDOW_D            BITMAP                  ".\\bmp\\window_d.bmp"
 
-#endif    // Spanish (Argentina) resources
+#endif    // Spanish (Spain, International Sort) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

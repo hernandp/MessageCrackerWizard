@@ -74,6 +74,9 @@
 #define ID_EDIT_MESSAGEFILTERS          40024
 #define ID_Menu                         40028
 #define ID_VIEW_DARKCOLORSCHEME         40029
+#define ID_EDIT_                        40032
+#define ID_EDIT_SEARCHLISTBOX           40033
+#define ID_EDIT_CLEARALLSELECTS         40034
 
 // Next default values for new objects
 // 
@@ -81,8 +84,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        118
-#define _APS_NEXT_COMMAND_VALUE         40030
-#define _APS_NEXT_CONTROL_VALUE         1046
+#define _APS_NEXT_COMMAND_VALUE         40035
+#define _APS_NEXT_CONTROL_VALUE         1047
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
